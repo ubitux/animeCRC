@@ -16,7 +16,7 @@
 
 import os, sys, re, binascii
 
-extensions = ['avi', 'mkv', 'mp4', 'ogm']
+extensions = ('avi', 'mkv', 'mp4', 'ogm')
 crc_regex  = re.compile(r'[^A-F0-9]([A-F0-9]{8})[^A-F0-9]')
 colors = {
     'failed':  '\033[1;31m', # red
