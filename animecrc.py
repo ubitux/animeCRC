@@ -52,5 +52,10 @@ for f in get_next_file(sys.argv[1]):
     if m:
         crc = crc32(f)
         status = 'ok' if crc == int(m.group(1), 16) else 'failed'
-    pad = int(os.popen('stty size').read().split()[1]) - len(f.decode('utf-8')) - len(status) - 2
-    print '%s\033[%dC%s[%s]%s' % (f, pad, colors[status], status.upper(), colors['default'])
+    ncols = int(os.popen('stty size').read().split()[1])
+    fname = f.decode('utf-8')
+    pad   = ncols - len(fname) - len(status) - 2
+    if pad < 0:
+        fname = fname[:ncols - len('...') - len(status) - 3] + '...'
+        pad = 1
+    print '%s\033[%dC%s[%s]%s' % (fname, pad, colors[status], status.upper(), colors['default'])
