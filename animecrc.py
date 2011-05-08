@@ -56,6 +56,6 @@ for f in get_next_file(sys.argv[1]):
     fname = f.decode('utf-8')
     pad   = ncols - len(fname) - len(status) - 2
     if pad < 0:
-        fname = fname[:ncols - len('...') - len(status) - 3] + '...'
+        fname = '...' + fname[-1*(pad - len('...') - 1):]
         pad = 1
     print '%s\033[%dC%s[%s]%s' % (fname, pad, colors[status], status.upper(), colors['default'])
