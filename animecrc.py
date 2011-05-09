@@ -27,9 +27,10 @@ colors = {
 
 def crc32(fname):
     f = open(fname, 'rb')
+    blksize = os.fstat(f.fileno()).st_blksize
     crc = 0
     while True:
-        data = f.read(8192)
+        data = f.read(blksize)
         if not data:
             break
         crc = binascii.crc32(data, crc) & 0xffffffff
