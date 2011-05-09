@@ -39,6 +39,7 @@ def crc32(fname):
 
 def get_next_file(dirname):
     for (root, dirs, files) in os.walk(dirname):
+        files.sort()
         for fname in files:
             if fname.rsplit('.')[-1].lower() in extensions:
                 yield os.path.join(root, fname)
