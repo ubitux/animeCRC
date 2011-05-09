@@ -17,7 +17,7 @@
 import os, sys, re, binascii
 
 extensions = ('avi', 'mkv', 'mp4', 'ogm')
-crc_regex  = re.compile(r'[^A-F0-9]([A-F0-9]{8})[^A-F0-9]')
+crc_regex  = re.compile(r'[^A-F0-9]([A-F0-9]{8})[^A-F0-9]', re.IGNORECASE)
 colors = {
     'failed':  '\033[1;31m', # red
     'ok':      '\033[1;32m', # green
