@@ -45,18 +45,21 @@ def get_next_file(dirname):
                 yield os.path.join(root, fname)
 
 def check_file(f):
-    status = 'unknown'
+    status, s_str = 'unknown', ''
     m = re.search(crc_regex, f)
+    crc = crc32(f)
     if m:
-        crc = crc32(f)
         status = 'ok' if crc == int(m.group(1), 16) else 'failed'
+        s_str  = status.upper()
+    else:
+        s_str  = '%08X' % crc
     ncols = int(os.popen('stty size').read().split()[1])
     fname = f.decode('utf-8')
-    pad   = ncols - len(fname) - len(status) - 2
+    pad   = ncols - len(fname) - len(s_str) - 2
     if pad <= 0:
         fname = '...' + fname[4 - pad:]
         pad = 1
-    print '%s\033[%dC%s[%s]%s' % (fname, pad, colors[status], status.upper(), colors['default'])
+    print '%s\033[%dC%s[%s]%s' % (fname, pad, colors[status], s_str, colors['default'])
 
 
 if len(sys.argv) < 2:
