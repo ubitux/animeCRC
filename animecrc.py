@@ -44,11 +44,7 @@ def get_next_file(dirname):
             if fname.rsplit('.')[-1].lower() in extensions:
                 yield os.path.join(root, fname)
 
-if len(sys.argv) != 2:
-    print 'Usage: %s [DIR]' % sys.argv[0]
-    sys.exit(1)
-
-for f in get_next_file(sys.argv[1]):
+def check_file(f):
     status = 'unknown'
     m = re.search(crc_regex, f)
     if m:
@@ -61,3 +57,16 @@ for f in get_next_file(sys.argv[1]):
         fname = '...' + fname[-1*(pad - len('...') - 1):]
         pad = 1
     print '%s\033[%dC%s[%s]%s' % (fname, pad, colors[status], status.upper(), colors['default'])
+
+
+if len(sys.argv) < 2:
+    print 'Usage: %s [DIR | FILE]' % sys.argv[0]
+    sys.exit(1)
+
+for arg in sys.argv[1:]:
+    if os.path.isdir(arg):
+        for f in get_next_file(arg):
+            check_file(f)
+    else:
+        check_file(arg)
+
