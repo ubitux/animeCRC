@@ -27,7 +27,7 @@ colors = {
 
 def crc32(fname):
     f = open(fname, 'rb')
-    blksize = os.fstat(f.fileno()).st_blksize
+    blksize = 1<<20
     crc = 0
     while True:
         data = f.read(blksize)
