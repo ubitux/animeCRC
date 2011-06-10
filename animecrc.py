@@ -66,10 +66,13 @@ if len(sys.argv) < 2:
     print 'Usage: %s [DIR | FILE]' % sys.argv[0]
     sys.exit(1)
 
-for arg in sys.argv[1:]:
-    if os.path.isdir(arg):
-        for f in get_next_file(arg):
-            check_file(f)
-    else:
-        check_file(arg)
+try:
+    for arg in sys.argv[1:]:
+        if os.path.isdir(arg):
+            for f in get_next_file(arg):
+                check_file(f)
+        else:
+            check_file(arg)
+except KeyboardInterrupt:
+    sys.exit(1)
 
