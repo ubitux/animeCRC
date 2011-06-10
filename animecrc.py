@@ -44,12 +44,14 @@ def get_next_file(dirname):
             if fname.rsplit('.')[-1].lower() in extensions:
                 yield os.path.join(root, fname)
 
-def check_file(f):
+def check_file(f, cs=None):
     status, s_str = 'unknown', ''
     m = re.search(crc_regex, f)
     crc = crc32(f)
-    if m:
-        status = 'ok' if crc == int(m.group(1), 16) else 'failed'
+    if m and not cs:
+        cs = int(m.group(1), 16)
+    if cs:
+        status = 'ok' if crc == cs else 'failed'
         s_str  = status.upper()
     else:
         s_str  = '%08X' % crc
@@ -61,6 +63,16 @@ def check_file(f):
         pad = 1
     print '%s\033[%dC%s[%s]%s' % (fname, pad, colors[status], s_str, colors['default'])
 
+def check_sfv(fname):
+    p = os.path.dirname(fname)
+    f = open(fname, 'r')
+    for line in f:
+        m = re.search('^([^#]*)\s+([A-F0-9]{8})$', line, re.IGNORECASE)
+        if m is not None:
+            n, c = m.group(1, 2)
+            check_file(os.path.join(p, n), int(c, 16))
+    f.close()
+
 
 if len(sys.argv) < 2:
     print 'Usage: %s [DIR | FILE]' % sys.argv[0]
@@ -71,6 +83,8 @@ try:
         if os.path.isdir(arg):
             for f in get_next_file(arg):
                 check_file(f)
+        elif arg.lower().endswith('.sfv'):
+            check_sfv(arg)
         else:
             check_file(arg)
 except KeyboardInterrupt:
