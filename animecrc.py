@@ -22,8 +22,19 @@ colors = {
     'failed':  '\033[1;31m', # red
     'ok':      '\033[1;32m', # green
     'unknown': '\033[1;33m', # yellow
+    'pg':      '\033[1;34m', # blue
     'default': '\033[0m',
 }
+
+def print_status(fname, clr, st, end='\n'):
+    ncols = int(os.popen('stty size').read().split()[1])
+    fname = fname.decode('utf-8')
+    st    = '[%s]' % st
+    pad   = ncols - len(fname) - len(st)
+    if pad <= 0:
+        fname = '...' + fname[4 - pad:]
+        pad = 1
+    sys.stdout.write(fname + ' '*pad + colors[clr] + st + colors['default'] + end)
 
 def crc32(fname):
     f = open(fname, 'rb')
@@ -33,7 +44,7 @@ def crc32(fname):
     for size in range(0, fsize, blksize):
         data = f.read(blksize)
         crc = binascii.crc32(data, crc) & 0xffffffff
-        sys.stdout.write('%d%%\r' % (size * 100 / fsize))
+        print_status(fname, 'pg', '%2d%%' % (size * 100 / fsize), end='\r')
     f.close()
     return crc
 
@@ -55,13 +66,7 @@ def check_file(f, cs=None):
         s_str  = status.upper()
     else:
         s_str  = '%08X' % crc
-    ncols = int(os.popen('stty size').read().split()[1])
-    fname = f.decode('utf-8')
-    pad   = ncols - len(fname) - len(s_str) - 2
-    if pad <= 0:
-        fname = '...' + fname[4 - pad:]
-        pad = 1
-    print '%s\033[%dC%s[%s]%s' % (fname, pad, colors[status], s_str, colors['default'])
+    print_status(f, status, s_str)
 
 def check_sfv(fname):
     p = os.path.dirname(fname)
