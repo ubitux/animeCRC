@@ -72,7 +72,7 @@ def check_sfv(fname):
     p = os.path.dirname(fname)
     f = open(fname, 'r')
     for line in f:
-        m = re.search('^([^#]*)\s+([A-F0-9]{8})$', line, re.IGNORECASE)
+        m = re.search('^([^;]*\S+)\s+([A-F0-9]{8})$', line.strip(), re.IGNORECASE)
         if m is not None:
             n, c = m.group(1, 2)
             check_file(os.path.join(p, n), int(c, 16))
