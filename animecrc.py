@@ -43,15 +43,14 @@ def _print_status(fname, clr, st, end='\n'):
 
 
 def _crc32(fname):
-    f = open(fname, 'rb')
-    blksize = 1<<20
-    fsize = os.fstat(f.fileno()).st_size
-    crc = 0
-    for size in range(0, fsize, blksize):
-        data = f.read(blksize)
-        crc = binascii.crc32(data, crc) & 0xffffffff
-        _print_status(fname, 'pg', '%2d%%' % (size * 100 / fsize), end='\r')
-    f.close()
+    with open(fname, 'rb') as f:
+        blksize = 1<<20
+        fsize = os.fstat(f.fileno()).st_size
+        crc = 0
+        for size in range(0, fsize, blksize):
+            data = f.read(blksize)
+            crc = binascii.crc32(data, crc) & 0xffffffff
+            _print_status(fname, 'pg', '%2d%%' % (size * 100 / fsize), end='\r')
     return crc
 
 
@@ -79,13 +78,12 @@ def _check_file(f, cs=None):
 
 def _check_sfv(fname):
     p = op.dirname(fname)
-    f = open(fname, 'r')
-    for line in f:
-        m = re.search(r'^([^;]*\S+)\s+([A-F0-9]{8})$', line.strip(), re.IGNORECASE)
-        if m is not None:
-            n, c = m.group(1, 2)
-            _check_file(op.join(p, n), int(c, 16))
-    f.close()
+    with open(fname, 'r') as f:
+        for line in f:
+            m = re.search(r'^([^;]*\S+)\s+([A-F0-9]{8})$', line.strip(), re.IGNORECASE)
+            if m is not None:
+                n, c = m.group(1, 2)
+                _check_file(op.join(p, n), int(c, 16))
 
 
 def _main():
