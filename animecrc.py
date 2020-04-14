@@ -27,7 +27,7 @@ colors = {
     'default': '\033[0m',
 }
 
-def print_status(fname, clr, st, end='\n'):
+def _print_status(fname, clr, st, end='\n'):
     ncols = int(os.popen('stty size').read().split()[1])
     st    = '[%s]' % st
     pad   = ncols - len(fname) - len(st)
@@ -36,7 +36,7 @@ def print_status(fname, clr, st, end='\n'):
         pad = 1
     sys.stdout.write(fname + ' '*pad + colors[clr] + st + colors['default'] + end)
 
-def crc32(fname):
+def _crc32(fname):
     f = open(fname, 'rb')
     blksize = 1<<20
     fsize = os.fstat(f.fileno()).st_size
@@ -44,21 +44,21 @@ def crc32(fname):
     for size in range(0, fsize, blksize):
         data = f.read(blksize)
         crc = binascii.crc32(data, crc) & 0xffffffff
-        print_status(fname, 'pg', '%2d%%' % (size * 100 / fsize), end='\r')
+        _print_status(fname, 'pg', '%2d%%' % (size * 100 / fsize), end='\r')
     f.close()
     return crc
 
-def get_next_file(dirname):
+def _get_next_file(dirname):
     for (root, dirs, files) in os.walk(dirname):
         files.sort()
         for fname in files:
             if fname.rsplit('.')[-1].lower() in extensions:
                 yield os.path.join(root, fname)
 
-def check_file(f, cs=None):
+def _check_file(f, cs=None):
     status, s_str = 'unknown', ''
     m = re.search(crc_regex, f)
-    crc = crc32(f)
+    crc = _crc32(f)
     if m and not cs:
         cs = int(m.group(1), 16)
     if cs:
@@ -66,16 +66,16 @@ def check_file(f, cs=None):
         s_str  = status.upper()
     else:
         s_str  = '%08X' % crc
-    print_status(f, status, s_str)
+    _print_status(f, status, s_str)
 
-def check_sfv(fname):
+def _check_sfv(fname):
     p = os.path.dirname(fname)
     f = open(fname, 'r')
     for line in f:
         m = re.search('^([^;]*\S+)\s+([A-F0-9]{8})$', line.strip(), re.IGNORECASE)
         if m is not None:
             n, c = m.group(1, 2)
-            check_file(os.path.join(p, n), int(c, 16))
+            _check_file(os.path.join(p, n), int(c, 16))
     f.close()
 
 
@@ -86,12 +86,12 @@ if len(sys.argv) < 2:
 try:
     for arg in sys.argv[1:]:
         if os.path.isdir(arg):
-            for f in get_next_file(arg):
-                check_file(f)
+            for f in _get_next_file(arg):
+                _check_file(f)
         elif arg.lower().endswith('.sfv'):
-            check_sfv(arg)
+            _check_sfv(arg)
         else:
-            check_file(arg)
+            _check_file(arg)
 except KeyboardInterrupt:
     sys.exit(1)
 
