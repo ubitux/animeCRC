@@ -79,19 +79,23 @@ def _check_sfv(fname):
     f.close()
 
 
-if len(sys.argv) < 2:
-    print(f'Usage: {sys.argv[0]} [DIR | FILE]')
-    sys.exit(1)
+def _main():
+    if len(sys.argv) < 2:
+        print(f'Usage: {sys.argv[0]} [DIR | FILE]')
+        sys.exit(1)
 
-try:
-    for arg in sys.argv[1:]:
-        if os.path.isdir(arg):
-            for f in _get_next_file(arg):
-                _check_file(f)
-        elif arg.lower().endswith('.sfv'):
-            _check_sfv(arg)
-        else:
-            _check_file(arg)
-except KeyboardInterrupt:
-    sys.exit(1)
+    try:
+        for arg in sys.argv[1:]:
+            if os.path.isdir(arg):
+                for f in _get_next_file(arg):
+                    _check_file(f)
+            elif arg.lower().endswith('.sfv'):
+                _check_sfv(arg)
+            else:
+                _check_file(arg)
+    except KeyboardInterrupt:
+        sys.exit(1)
 
+
+if __name__ == '__main__':
+    _main()
