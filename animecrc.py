@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 #            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
 #                    Version 2, December 2004
@@ -29,7 +29,6 @@ colors = {
 
 def print_status(fname, clr, st, end='\n'):
     ncols = int(os.popen('stty size').read().split()[1])
-    fname = fname.decode('utf-8')
     st    = '[%s]' % st
     pad   = ncols - len(fname) - len(st)
     if pad <= 0:
@@ -81,7 +80,7 @@ def check_sfv(fname):
 
 
 if len(sys.argv) < 2:
-    print 'Usage: %s [DIR | FILE]' % sys.argv[0]
+    print(f'Usage: {sys.argv[0]} [DIR | FILE]')
     sys.exit(1)
 
 try:
