@@ -18,9 +18,9 @@
 import os, sys, re, binascii
 import os.path as op
 
-extensions = ('avi', 'mkv', 'mp4', 'ogm')
-crc_regex  = re.compile(r'[^A-F0-9]([A-F0-9]{8})[^A-F0-9]', re.IGNORECASE)
-colors = {
+_EXTENSIONS = ('avi', 'mkv', 'mp4', 'ogm')
+_CRC_REGEX  = re.compile(r'[^A-F0-9]([A-F0-9]{8})[^A-F0-9]', re.IGNORECASE)
+_COLORS = {
     'failed':  '\033[1;31m', # red
     'ok':      '\033[1;32m', # green
     'unknown': '\033[1;33m', # yellow
@@ -35,7 +35,7 @@ def _print_status(fname, clr, st, end='\n'):
     if pad <= 0:
         fname = '...' + fname[4 - pad:]
         pad = 1
-    sys.stdout.write(fname + ' '*pad + colors[clr] + st + colors['default'] + end)
+    sys.stdout.write(fname + ' '*pad + _COLORS[clr] + st + _COLORS['default'] + end)
 
 def _crc32(fname):
     f = open(fname, 'rb')
@@ -53,12 +53,12 @@ def _get_next_file(dirname):
     for (root, dirs, files) in os.walk(dirname):
         files.sort()
         for fname in files:
-            if fname.rsplit('.')[-1].lower() in extensions:
+            if fname.rsplit('.')[-1].lower() in _EXTENSIONS:
                 yield op.join(root, fname)
 
 def _check_file(f, cs=None):
     status, s_str = 'unknown', ''
-    m = re.search(crc_regex, f)
+    m = re.search(_CRC_REGEX, f)
     crc = _crc32(f)
     if m and not cs:
         cs = int(m.group(1), 16)
