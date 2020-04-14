@@ -15,7 +15,10 @@
 #  0. You just DO WHAT THE FUCK YOU WANT TO.
 #
 
-import os, sys, re, binascii
+import os
+import sys
+import re
+import binascii
 import os.path as op
 
 _EXTENSIONS = ('avi', 'mkv', 'mp4', 'ogm')
@@ -28,6 +31,7 @@ _COLORS = {
     'default': '\033[0m',
 }
 
+
 def _print_status(fname, clr, st, end='\n'):
     ncols = int(os.popen('stty size').read().split()[1])
     st    = '[%s]' % st
@@ -36,6 +40,7 @@ def _print_status(fname, clr, st, end='\n'):
         fname = '...' + fname[4 - pad:]
         pad = 1
     sys.stdout.write(fname + ' '*pad + _COLORS[clr] + st + _COLORS['default'] + end)
+
 
 def _crc32(fname):
     f = open(fname, 'rb')
@@ -49,12 +54,14 @@ def _crc32(fname):
     f.close()
     return crc
 
+
 def _get_next_file(dirname):
     for (root, dirs, files) in os.walk(dirname):
         files.sort()
         for fname in files:
             if fname.rsplit('.')[-1].lower() in _EXTENSIONS:
                 yield op.join(root, fname)
+
 
 def _check_file(f, cs=None):
     status, s_str = 'unknown', ''
@@ -68,6 +75,7 @@ def _check_file(f, cs=None):
     else:
         s_str  = '%08X' % crc
     _print_status(f, status, s_str)
+
 
 def _check_sfv(fname):
     p = op.dirname(fname)
