@@ -16,6 +16,7 @@
 #
 
 import os, sys, re, binascii
+import os.path as op
 
 extensions = ('avi', 'mkv', 'mp4', 'ogm')
 crc_regex  = re.compile(r'[^A-F0-9]([A-F0-9]{8})[^A-F0-9]', re.IGNORECASE)
@@ -53,7 +54,7 @@ def _get_next_file(dirname):
         files.sort()
         for fname in files:
             if fname.rsplit('.')[-1].lower() in extensions:
-                yield os.path.join(root, fname)
+                yield op.join(root, fname)
 
 def _check_file(f, cs=None):
     status, s_str = 'unknown', ''
@@ -69,13 +70,13 @@ def _check_file(f, cs=None):
     _print_status(f, status, s_str)
 
 def _check_sfv(fname):
-    p = os.path.dirname(fname)
+    p = op.dirname(fname)
     f = open(fname, 'r')
     for line in f:
         m = re.search('^([^;]*\S+)\s+([A-F0-9]{8})$', line.strip(), re.IGNORECASE)
         if m is not None:
             n, c = m.group(1, 2)
-            _check_file(os.path.join(p, n), int(c, 16))
+            _check_file(op.join(p, n), int(c, 16))
     f.close()
 
 
@@ -86,7 +87,7 @@ def _main():
 
     try:
         for arg in sys.argv[1:]:
-            if os.path.isdir(arg):
+            if op.isdir(arg):
                 for f in _get_next_file(arg):
                     _check_file(f)
             elif arg.lower().endswith('.sfv'):
