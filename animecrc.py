@@ -81,7 +81,7 @@ def _check_sfv(fname):
     p = op.dirname(fname)
     f = open(fname, 'r')
     for line in f:
-        m = re.search('^([^;]*\S+)\s+([A-F0-9]{8})$', line.strip(), re.IGNORECASE)
+        m = re.search(r'^([^;]*\S+)\s+([A-F0-9]{8})$', line.strip(), re.IGNORECASE)
         if m is not None:
             n, c = m.group(1, 2)
             _check_file(op.join(p, n), int(c, 16))
